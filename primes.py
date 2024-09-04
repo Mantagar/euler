@@ -1,22 +1,43 @@
+def nextPrime(primes):
+    candidate = primes[-1] + 2
+    while True:
+        for p in primes:
+            if p*p > candidate:
+                return candidate
+            if candidate % p == 0:
+                break
+        candidate += 2
+
 def primesSieve(n):
+    import time
+    print("Prime sieve running...")
+    t = time.time()
     # by far the fastest as it doesn't have dividing overhead
-    # only odd numbers are considered
-    # prime p needs to be incremented by 2 p times to get its multiples
+    # only odd numbers are considered (but it works also when fed table of natural numbers)
     sieve = list(range(3, n+1, 2))
-    primes = [2]
     index = 0
-    jumpingIndex = 0
-    while index < len(sieve):
-        p = sieve[index]
-        primes.append(p)
-        jumpingIndex = index + p
-        while jumpingIndex < len(sieve):
-            sieve[jumpingIndex] = 0
-            jumpingIndex += p
+    while True:
+        
+        zeroMultiplesOfPrime(sieve, index)
+
+        # from index to index + p(p-1)/2 there are only primes and zeros
+        if len(sieve) < index + (sieve[index] - 1)//2*sieve[index] + 2:
+            break
+
         index += 1
-        while index < len(sieve) and sieve[index] == 0:
+        while sieve[index] == 0:
             index += 1
+
+    primes = [2] + [p for p in sieve if p != 0]
+    print("primes({}) {:.5f}s".format(len(primes), time.time() - t))
     return primes
+
+def zeroMultiplesOfPrime(sieve, index):
+    p = sieve[index]
+    jumpingIndex = index + p
+    while jumpingIndex < len(sieve):
+        sieve[jumpingIndex] = 0
+        jumpingIndex += p
 
 def generateSkips(startingPrimes):
     limit = 1
@@ -77,10 +98,7 @@ def testComplexity():
     import time
     n = 10**7
 
-    t = time.time()
-    p = primesSieve(n)
-    t = time.time() - t
-    print("Sieve:", t, len(p))
+    primesSieve(n)
 
     startingPrimes = [2,3,5,7,11,13,17]
     for i in range(0,len(startingPrimes)):
@@ -91,8 +109,8 @@ def testComplexity():
 
     """
 n = 10**7
-Sieve: 1.9706051349639893 664579              <------ by far the best
-Skip 2: 15.992695569992065 664579 [2]         <------ no gain for connsecutive skips (int limits?)
+Sieve: 1.9706051349639893 664579              <------ by far the best (no division overhead)
+Skip 2: 15.992695569992065 664579 [2]         <------ almost no gain for connsecutive skips
 Skip 3: 15.685003757476807 664579 [2, 3]
 Skip 5: 15.313693761825562 664579 [2, 3, 5]
 Skip 7: 15.313390254974365 664579 [2, 3, 5, 7]
