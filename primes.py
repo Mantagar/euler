@@ -60,7 +60,7 @@ def generateSkips(startingPrimes):
     skips.append(coprimes[0] - coprimes[-1] + limit)
     return skips
 
-def primesSkip(n, startingPrimes=[2,3,5,7,11,13,17]):
+def primesSkip(n, startingPrimes=[2,3,5,7]):
     # all the generated numbers will be coprime to startingPrimes
     primes = []
     skips = generateSkips(startingPrimes)
@@ -77,7 +77,9 @@ def primesSkip(n, startingPrimes=[2,3,5,7,11,13,17]):
         if isPrime:
             primes.append(i)
         i += skips[s]
-        s = (s+1) % len(skips)
+        s = s+1
+        if s == len(skips):
+            s -= len(skips)
     return startingPrimes + primes
 
 def bSearch(n, data):
@@ -117,4 +119,11 @@ Skip 7: 15.313390254974365 664579 [2, 3, 5, 7]
 Skip 11: 15.109517812728882 664579 [2, 3, 5, 7, 11]
 Skip 13: 14.996946096420288 664579 [2, 3, 5, 7, 11, 13]
 Skip 17: 15.073673009872437 664579 [2, 3, 5, 7, 11, 13, 17]
+primes(664579) 1.41065s
+Skip 2: 17.34155249595642 664579 [2]
+Skip 3: 16.83974289894104 664579 [2, 3]
+Skip 5: 16.516836404800415 664579 [2, 3, 5]
+Skip 7: 16.274359703063965 664579 [2, 3, 5, 7]
+Skip 11: 16.21398687362671 664579 [2, 3, 5, 7, 11]
+Skip 13: 16.0749351978302 664579 [2, 3, 5, 7, 11, 13]
     """
